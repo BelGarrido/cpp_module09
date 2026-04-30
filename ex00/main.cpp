@@ -1,0 +1,86 @@
+#include <iostream>
+#include <string.h>
+#include <fstream>
+#include <sstream> 
+
+// pseudocode
+
+// 1) divide with getline and stores the date in a string date and string value
+// 2) parse the format in the string date to see if valid date
+//        IF is valid
+//        2.1) parse the value and if valid use stringstream to ss >> float
+// 3) if both valids, we save it in a pair of map <string, float>
+
+
+
+// 1. open the file
+// 2. read line by line
+// 3. split each line at '|'
+// 4. store in map<string, float>
+// 4. open the file
+// 5. read line by line
+// 6. validate date ()
+// 7. validate value (not negative, not > 1000)
+// 8. use that date to look up the price in map
+
+// - wrong format (missing -, wrong length, spaces)
+// - month out of range (< 1 or > 12)
+// - day out of range (< 1 or > 31)
+// - value is negative
+// - value is higher than 1000
+// - empty value
+// - missing |
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        return 1;
+    }
+
+    std::ifstream data("prueba.csv");
+    if(!data.is_open()) {
+        std::cout << "ERROR: file could not be opened"  << std::endl; 
+        return 1;
+    }
+
+    //data.open("prueba.csv");
+    std::string line;
+    getline(data, line);
+    if (line.empty()) {
+        std::cout << "ERROR: file is empty, this is no super accurate i need to think about how to improve it"  << std::endl; 
+        return 1;
+    }
+    while (getline(data, line)) {
+        std::stringstream ss(line);
+        std::string date;
+        std::string value;
+        //std::cout << "before getline" << std::endl;
+        getline(ss, date, ',');   // reads until it hits ','
+        getline(ss, value);       // reads the rest of the line
+        std::cout << "date: " << date << " value: " << value << std::endl;
+    }
+    std::cout << "here" << std::endl;    
+}
+
+
+// map<string, vector<int>> data;
+// data["numbers"] = {10, 20, 30};
+// data["others"] = {40, 50, 60};
+
+// map<string, vector<int>>::iterator eso;
+// vector<int>::iterator it;
+
+// for(eso = data.begin(); eso != data.end(); ++eso){
+//     for(it = eso->second.begin(); it != eso->second.end(); ++it){
+//         cout << eso->first << " => " << *it << '\n';
+//     }
+// }
+
+
+
+// int main() {
+
+// std::cout << "Por favor, introduce la cadena de caracteres\n";
+// std::string input  = " ";
+// std::getline(std::cin, input);
+// cout << input << endl;
+// }
