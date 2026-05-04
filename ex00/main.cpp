@@ -32,10 +32,38 @@
 // - empty value
 // - missing |
 
-bool parseYear(std::string &date) {
+bool validYear(std::string &date) {
     std::string yearStr = date.substr(0, 4);
-    std::cout << "YEAR -------" << yearStr << std::endl;
     int year;
+    std::stringstream tmp(yearStr);
+    tmp >> year;
+    if (year < 2009 || year > 2100) {
+        std::cout << "INVALID DATE: year not valid" << std::endl;
+        return false;
+    }
+}
+
+bool validMonth(std::string &date) {
+    std::string monthStr = date.substr(5, 2);
+    int month;
+    std::stringstream tmp(monthStr);
+    tmp >> month;
+    if (month < 1 || month > 12) {
+        std::cout << "INVALID DATE: month not valid" << std::endl;
+        return false;
+    }
+}
+
+bool validDay(std::string &date) {
+    std::string dayStr = date.substr(8, 2);
+    int day;
+    std::stringstream tmp(dayStr);
+    tmp >> day;
+    if (day < 1 || day > 31) {
+        std::cout << "INVALID DATE: day not valid" << std::endl;
+        return false;
+    }
+    return true;
 }
 
 bool validLine(std::string &line) {
@@ -64,35 +92,9 @@ bool validDate(std::string &date) {
         return false;
     }
     
-    std::string monthStr = date.substr(5, 2);
-    std::cout << "MONTH -------" << monthStr << std::endl;
-    int month;
-    std::string dayStr = date.substr(8, 2);
-    std::cout << "DAY ---------" << dayStr << std::endl;
-    int day;
-    
-    std::stringstream tmp(yearStr);
-    tmp >> year;
-    if (year < 2009 || year > 2100) {
-        std::cout << "INVALID DATE: year not valid" << std::endl;
+    if(!validYear(date) || !validMonth(date) || !validDay(date)) {
         return false;
     }
-
-    std::stringstream tmp2(monthStr);
-    tmp2 >> month;
-    if (month < 1 || month > 12) {
-        std::cout << "INVALID DATE: month not valid" << std::endl;
-        return false;
-    }
-    std::stringstream tmp3(dayStr);
-    tmp3 >> day;
-    if (day < 1 || day > 31) {
-        std::cout << "INVALID DATE: day not valid" << std::endl;
-        return false;
-    }
-
-    //luego duvidir en substring y comprobar el valor numerico
-    
     return true;
 }
 
