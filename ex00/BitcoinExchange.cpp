@@ -15,6 +15,24 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &other) {
 BitcoinExchange::~BitcoinExchange() {}
 
 
+bool processLine(std::string &line, std::string &date, float &value) {
+    
+    std::stringstream ss(line);
+    if (validLine(line)){
+        std::string tmpDate;
+        getline(ss, tmpDate, '|');   // reads until it hits ','
+        int start = tmpDate.find_first_not_of(' ');  // 3
+        int final   = tmpDate.find_last_not_of(' ');   // 7
+        date = tmpDate.substr(start, final + 1);
+        // position
+        std::string tmpValue;
+        getline(ss, tmpValue);       // reads the rest of the line
+        value = std::stof(tmpValue);
+        std::cout << "inside process line:" << date << "." << value << std::endl;
+    }
+    return true;
+}
+
 bool validYear(std::string &date) {
     std::string yearStr = date.substr(0, 4);
     int year;
@@ -51,7 +69,6 @@ bool validDay(std::string &date) {
     return true;
 }
 
-
 bool validLine(std::string &line) {
 
     if(line.size() < 14) {
@@ -71,18 +88,24 @@ bool validLine(std::string &line) {
     return true;
 }
 
-// bool validDate(std::string &date) {
+bool validDate(std::string &date) {
     
-//     if(date.size() != 11) {
-//         std::cout << "INVALID FORMAT: date length" << std::endl;
-//         return false;
-//     }
+    if(date.size() != 10) {
+        std::cout << "INVALID FORMAT: date length" << std::endl;
+        return false;
+    }
     
-//     if(!validYear(date) || !validMonth(date) || !validDay(date)) {
-//         return false;
-//     }
-//     return true;
-// }
+    if(!validYear(date) || !validMonth(date) || !validDay(date)) {
+        return false;
+    }
+    return true;
+}
+
+bool validValue(float value ) {
+    if (value > 1000 || value < 0)
+        return false;
+    return true;
+}
 
 
 
@@ -138,20 +161,11 @@ bool BitcoinExchange::processInput(const std::string &filename) {
             return 1;
         }
         
-        std::stringstream ss(line);
-        std::string strDate;
-        std::string strValue;
-
-        getline(ss, strDate, '|');   // reads until it hits ','
-        
-        int start = strDate.find_first_not_of(' ');  // 3
-        int final   = strDate.find_last_not_of(' ');   // 7
-        std::string date = strDate.substr(start, final + 1);
-        // position
-        getline(ss, strValue);       // reads the rest of the line
-        float value = std::stof(strValue);
-        
-        if(validDate() && validValue()) {
+        std::string date;
+        float value;
+        processLine(line, date, value);
+        std::cout << date << "." << value << std::endl;
+        if(validDate(date) && validValue(value)) {
             std::map<std::string, float>::iterator key = _database.lower_bound(date);
             std::map<std::string, float>::iterator end = _database.end();
             if(key->first != date || key == end) {
