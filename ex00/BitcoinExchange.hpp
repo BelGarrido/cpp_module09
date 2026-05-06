@@ -1,7 +1,10 @@
 #ifndef BITCOIN_HPP
 #define BITCOIN_HPP
-#include <map>
+#include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream> 
+#include <map>
 
 class BitcoinExchange {
     private:
@@ -11,9 +14,11 @@ class BitcoinExchange {
         BitcoinExchange(const BitcoinExchange &other);
         BitcoinExchange& operator=(const BitcoinExchange &other);
         ~BitcoinExchange();
-        bool loadDatabase (std::string &filename);
-        bool processInput(std::string &filename);
+        bool loadDatabase (const std::string &filename);
+        bool processInput(const std::string &filename);
+        
 } ;
 
+bool validLine(std::string &line);
 
 #endif
