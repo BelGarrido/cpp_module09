@@ -104,47 +104,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::ifstream data("../prueba.csv");
-    if(!data.is_open()) {
-        std::cout << "ERROR: file could not be opened"  << std::endl; 
-        return 1;
-    }
-
-    //data.open("prueba.csv");
-    std::string line;
-    getline(data, line);
-    if (line.empty()) {
-        std::cout << "ERROR: file is empty, this is no super accurate i need to think about how to improve it"  << std::endl; 
-        return 1;
-    }
-
-    //empty map initialise
-    std::map<std::string, float> dataHistory;
-
-    while (getline(data, line)) {
-        std::stringstream ss(line);
-        std::string date;
-        std::string strValue;
-        //std::cout << "before getline" << std::endl;
-        getline(ss, date, ',');   // reads until it hits ','
-        getline(ss, strValue);       // reads the rest of the line
-        
-        //transform string to float (not sure is i have to ste the precision?)
-        float value = std::stof(strValue);
-
-        std::cout << "date: " << date << " value: " << strValue << "float: " << value << std::endl;
-        dataHistory.insert({date, value});
-    }
-    for (std::map<std::string, float>::iterator record=dataHistory.begin(); record != dataHistory.end(); ++record) {
-            std::cout << record->first << " => " << record->second << std::endl;
-    }
-    std::cout << "here" << std::endl;
-
     std::ifstream input("../input.txt");
     if(!input.is_open()) {
         std::cout << "ERROR: file could not be opened"  << std::endl; 
         return 1;
     }
+    std::string line;
     getline(input, line);
     while (getline(input, line)) {
         if(!validLine(line)) {
