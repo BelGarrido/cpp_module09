@@ -14,8 +14,22 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &other) {
 
 BitcoinExchange::~BitcoinExchange() {}
 
-
-
+bool validValue(std::string &strValue) {
+    if(strValue.empty()) {
+        std::cout << "empty value" << std::endl;
+        return false;
+    }
+    float value = std::stof(strValue);
+    if (value > 1000) {
+        std::cout << "Error: too large a number." << std::endl;
+        return false;
+    }
+    else if (value < 0) {
+        std::cout << "Error: not a positive number." << std::endl;
+        return false;        
+    }
+    return true;
+}
 
 bool validDate(int day, int month, int year) {
 
@@ -50,25 +64,7 @@ bool validDate(int day, int month, int year) {
     return true;
 }
 
-bool validLine(std::string &line) {
-
-    if(line.size() < 14) {
-        //std::cout << "INVALID FORMAT: invalid length" << std::endl;
-        return false;
-    }
-
-    if(line.find('|') != 11) {
-        //std::cout << "INVALID FORMAT: missing '|'" << std::endl;
-        return false;
-    }
-    return true;
-}
-
 bool processDate(std::string &date) {
-    
-    if(date.size() != 10) {return false;}
-
-    if(date[4] != '-' && date[7] != '-') {return false;}
 
     // days
     int day;
@@ -80,7 +76,7 @@ bool processDate(std::string &date) {
     std::stringstream tmpM(date.substr(5, 2));
     tmpM >> month;
 
-    // years
+    // yearss
     int year;
     std::stringstream tmpY(date.substr(0, 4));
     tmpY >> year;
@@ -91,20 +87,28 @@ bool processDate(std::string &date) {
     return true;
 }
 
-bool validValue(std::string &strValue) {
-    if(strValue.empty()) {
-        std::cout << "empty value" << std::endl;
+bool validLine(std::string &line) {
+
+    if(line.size() < 14) {
+        //std::cout << "INVALID FORMAT: invalid length" << std::endl;
         return false;
     }
-    float value = std::stof(strValue);
-    if (value > 1000) {
-        std::cout << "Error: too large a number." << std::endl;
+    
+    if(line.find('|') != 11) {
+        //std::cout << "INVALID FORMAT: missing '|'" << std::endl;
         return false;
     }
-    else if (value < 0) {
-        std::cout << "Error: not a positive number." << std::endl;
-        return false;        
+    int i = 13;
+
+    if(line[i] == '-' && isdigit(line [i + 1])) 
+        i++;
+    
+    for (;i < line.size(); i++) {
+        if (!isdigit(line[i]) && line[i] != '.')
+            return false;
     }
+    if(line[4] != '-' && line[7] != '-') return false;
+
     return true;
 }
 
@@ -139,8 +143,6 @@ bool processLine(std::string &line, std::string &date, float &value) {
     value = std::stof(tmpValue);
     return true;
 }
-//________________________________________________________________________
-
 
 bool BitcoinExchange::loadDatabase(const std::string &filename) {
     
@@ -184,6 +186,7 @@ bool BitcoinExchange::processInput(const std::string &filename) {
 
         std::string date;
         float value;
+
         if(processLine(line, date, value)) {
             std::map<std::string, float>::iterator key = _database.lower_bound(date);
             std::map<std::string, float>::iterator end = _database.end();
