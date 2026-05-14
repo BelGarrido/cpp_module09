@@ -30,6 +30,7 @@
 int main(int argc, char *argv[]) {
     
     if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " + file.txt" << std::endl;
         return 1;
     }
     // create an object BitcoinExchange
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
     // load the database in _database attribute of BTC
     btc.loadDatabase("../data.csv");
     // open, read, validate and query of input key
-    btc.processInput("../input.txt");
+    btc.processInput(argv[1]);
     
     return 0;
 }

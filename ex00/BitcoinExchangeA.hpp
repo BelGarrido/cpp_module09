@@ -8,22 +8,15 @@
 #include <ctime>
 
 
-enum eError {
-    OK,
-    ERR_TOO_LARGE,
-    ERR_NEGATIVE,
-    ERR_BAD_INPUT,
-    ERR_BAD_DATE
-};
-
 class BitcoinExchange {
     private:
         std::map<std::string, float> _database;
-        eError validValue(std::string &strValue);
-        eError validDate(std::string &date);
-        eError validLine(std::string &line, std::string &date, std::string &strValue);
-        float lookUp(std::string &date);
-        void printError(eError error, std::string &context);
+        static bool validValue(std::string &strValue);
+        static bool validDate(int day, int month, int year);
+        static bool processDate(std::string &date);
+        static bool validLine(std::string &line);
+        static bool processLine(std::string &line, std::string &date, float &value);
+
     public:
         BitcoinExchange();
         BitcoinExchange(const BitcoinExchange &other);
@@ -34,6 +27,6 @@ class BitcoinExchange {
         
 } ;
 
-std::string trim(const std::string &str);
+bool validLine(std::string &line);
 
 #endif
