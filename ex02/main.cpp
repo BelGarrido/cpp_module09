@@ -6,8 +6,8 @@
 
 
 // fase 1
-// processInput()  → fills the vector with the input numbers
-// makePairs()     → compares pairs and fills a vector of {winner, loser} structs
+// 🟢 processInput()  → fills the vector with the input numbers
+// 🟢 makePairs()     → compares pairs and fills a vector of {winner, loser} structs
 
 // fase 2
 // sort recursively 
@@ -52,9 +52,13 @@ int main (int argc, char *argv[]) {
     if (argc != 2)
         return 1;
     std::string input = argv[1];
-    PmergeMe FordJ(input);
+    PmergeMe ford(input);
 
-    if (FordJ.processInput())
+    if (ford.processInput()) {
         std::cout << "done" << std::endl;
+        ford.makePairs();
+        ford.sortWinners(ford.getPairSize());
+    }
+
     return 0;
 }
