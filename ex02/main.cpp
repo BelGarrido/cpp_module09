@@ -11,8 +11,8 @@
 
 // fase 2
 // sort recursively 
-// sortWinners(pairs, 4):
-//     sortWinners(pairs, 2):        ← recurse on first half
+// 🟢sortWinners(pairs, 4):
+//    sortWinners(pairs, 2):        ← recurse on first half
 //         sortWinners(pairs, 1):    ← base case, return
 //         insert pairs[1] into the sorted chain of [pairs[0]]
 //     insert pairs[2], pairs[3] using Jacobsthal order
@@ -29,7 +29,7 @@
 //     // insert remaining pairs[size/2 .. size-1] winners into chain
 //      Binary search → finds the correct index
 //      Insert at that index → places the winner in the right position
-//     // using Jacobsthal order
+// 
 // }
 
 
@@ -58,6 +58,7 @@ int main (int argc, char *argv[]) {
         std::cout << "done" << std::endl;
         ford.makePairs();
         ford.sortWinners(ford.getPairSize());
+        ford.insertRemain();
     }
 
     return 0;

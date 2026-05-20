@@ -17,9 +17,11 @@ class PmergeMe {
         std::vector<int> _vector;
         std::string _input;
         std::vector<pairNum> _pair;
+        std::vector<pairNum> _aux;
         std::vector<int> _sortedChain;
         PmergeMe();
-        int binarySearch(int searchValue);
+        int binarySearch(int searchValue, int high);
+        void insertLoser(int jIndex);
     public:
         PmergeMe(std::string &input);
         PmergeMe(const PmergeMe &other);
@@ -29,6 +31,7 @@ class PmergeMe {
         void makePairs();
         void sortWinners(int size);
         int getPairSize();
+        void insertRemain();
 };
 
 bool isValidNumber(std::string &s);

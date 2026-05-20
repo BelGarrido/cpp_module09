@@ -66,18 +66,20 @@ void PmergeMe::makePairs() {
     }
     
     for (int i = 0; i < _pair.size(); i++)
-        std::cout << "this is pair: winner ==> " << _pair[i].winner << " loser ==> " << _pair[i].loser << std::endl;
+        std::cout << "(PHASE 1) pair: winner ==> " << _pair[i].winner << " loser ==> " << _pair[i].loser << std::endl;
 }
 
 
-int PmergeMe::binarySearch(int searchValue) {
+int PmergeMe::binarySearch(int searchValue, int high) {
     int low = 0;
-    int high = _sortedChain.size() - 1;
+    //int high = _sortedChain.size() - 1;
     int mid = 0;
     
     while (low <= high) {
         mid = (low + high) / 2;
-        if (searchValue > _sortedChain[mid]) { //is on the right side of the chain
+        if (searchValue == _sortedChain[mid])
+            return mid;
+        else if (searchValue > _sortedChain[mid]) { //is on the right side of the chain
             low = mid + 1;
             //mid = (low + high) / 2; 
         }
@@ -92,19 +94,68 @@ int PmergeMe::binarySearch(int searchValue) {
 void PmergeMe::sortWinners(int size) {
     if(size <= 1) {
         _sortedChain.push_back(_pair[0].winner);
+        _aux.push_back(_pair[0]);
         return;
     }
     sortWinners(size/2);
 
     for (int i = size/2; i < size; i++ ) {
-        _sortedChain.insert(_sortedChain.begin() + binarySearch(_pair[i].winner), _pair[i].winner);
-        std::cout << "_sortedChain at " << i << " iteration => ";
+
+        int insertion = binarySearch(_pair[i].winner, _sortedChain.size() - 1);
+
+        _sortedChain.insert(_sortedChain.begin() + insertion, _pair[i].winner);
+        _aux.insert(_aux.begin() + insertion, _pair[i]);
+        std::cout << "(PHASE 2) _sortedChain at " << i << " iteration => ";
         for (int x = 0; x < _sortedChain.size(); x++) 
             std::cout << _sortedChain[x] << " ";
-        std::cout << std::endl;
+        std::cout << std::endl; 
     }
+    _pair = _aux;
+    for (int i = 0; i < _pair.size(); i++)
+        std::cout << "(PHASE 2) pair sorted: winner ==> " << _pair[i].winner << " loser ==> " << _pair[i].loser << std::endl;
+    /* for (int i = 0; i < _aux.size(); i++)
+        std::cout << "this is aux: winner ==> " << _aux[i].winner << " loser ==> " << _aux[i].loser << std::endl; */
+
 }
 
 int PmergeMe::getPairSize() {
     return _pair.size();
+}
+
+void PmergeMe::insertLoser(int jIndex) {
+    if(_pair[jIndex].loser < 0)
+        return;
+    int insertion = binarySearch(_pair[jIndex].loser, jIndex);
+    _sortedChain.insert(_sortedChain.begin() + insertion, _pair[jIndex].loser); //always first special case
+    std::cout << "(PHASE 3) pair inserted: winner ==> " << _pair[jIndex].winner << " loser ==> " << _pair[jIndex].loser << std::endl;
+}
+
+void PmergeMe::insertRemain() {
+    
+    int prev = 1;
+    int curr = 3;
+    insertLoser(0);
+
+    std::cout << "outside while loop, curr = " << curr << std::endl;
+    std::cout << "outside while loop, _pair.size() = " << _pair.size() << std::endl;
+    while (curr <= _pair.size()) {
+        std::cout << "inside while loop, curr = " << curr << std::endl;
+        int insertionIndex = std::min(curr, (int)_pair.size() - 1);
+        for(int i = insertionIndex; i >= prev; i--) {
+            insertLoser(i);
+        }
+
+        // find the next Jacobsthal index
+        int tmpIndex = curr + 2 * prev;
+        prev = curr;
+        curr = tmpIndex;
+    }
+    std::cout << "_vector => ";
+    for (int y = 0; y < _vector.size(); y++) 
+            std::cout << _vector[y] << " ";
+    std::cout << std::endl;
+    std::cout << "_sortedChain => ";
+    for (int x = 0; x < _sortedChain.size(); x++) 
+            std::cout << _sortedChain[x] << " ";
+    std::cout << std::endl; 
 }
