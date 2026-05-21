@@ -2,9 +2,9 @@
 
 PmergeMe::PmergeMe() {}
 
-PmergeMe::PmergeMe(std::string &input) {
+/* PmergeMe::PmergeMe(std::string &input) {
     _input = input;
-}
+} */
 
 PmergeMe::PmergeMe(const PmergeMe &other) : _vector(other._vector) {
 }
@@ -17,11 +17,10 @@ PmergeMe& PmergeMe::operator=(const PmergeMe &other) {
 PmergeMe::~PmergeMe() {}
 
 bool isValidNumber(std::string &s) {
-    int i = 0;
+    size_t i = 0;
     if(s[i] == '-' || s[i] == '+') {
-        i++;
+        return false;
     }
-    
     for (; i < s.size(); i++) {
         if (!isdigit(s[i])) {
             return false;
@@ -30,16 +29,25 @@ bool isValidNumber(std::string &s) {
     return true;
 }
 
-bool PmergeMe::processInput() {
+bool PmergeMe::processInput(std::string &input) {
 
-    std::istringstream iss(_input);
+    std::istringstream iss(input);
     std::string token;
 
+    if(token.empty()) {
+        std::cerr << "Error (empty string)" << std::endl;
+        return false;
+    }
     while(iss >> token) {
         if (isValidNumber(token)) {
             int tmpNum = atoi(token.c_str());
-            std::cout <<  "this is VALID tmpNum: " << tmpNum << std::endl;
-            _vector.push_back(tmpNum);
+            std::vector<int>::iterator it = std::find(_vector.begin(), _vector.end(), tmpNum);
+            if(_vector.empty() || it == _vector.end())
+                _vector.push_back(tmpNum);
+            else {
+                std::cerr << "Error (duplicate number) => " << token << std::endl;
+                return false;
+            }
         }
         else {
             std::cerr << "Error => " << token << std::endl;
@@ -65,7 +73,7 @@ void PmergeMe::makePairs() {
         _pair.push_back(p);
     }
     
-    for (int i = 0; i < _pair.size(); i++)
+    for (size_t i = 0; i < _pair.size(); i++)
         std::cout << "(PHASE 1) pair: winner ==> " << _pair[i].winner << " loser ==> " << _pair[i].loser << std::endl;
 }
 
@@ -87,6 +95,8 @@ int PmergeMe::binarySearch(int searchValue, int high) {
             high = mid - 1;
             //mid = (low + high) / 2; 
         }
+/*         else
+            return -1; */
     }
     return low;
 }
@@ -94,7 +104,7 @@ int PmergeMe::binarySearch(int searchValue, int high) {
 void PmergeMe::sortWinners(int size) {
     if(size <= 1) {
         _sortedChain.push_back(_pair[0].winner);
-        _aux.push_back(_pair[0]);
+        _sortedPair.push_back(_pair[0]);
         return;
     }
     sortWinners(size/2);
@@ -104,17 +114,17 @@ void PmergeMe::sortWinners(int size) {
         int insertion = binarySearch(_pair[i].winner, _sortedChain.size() - 1);
 
         _sortedChain.insert(_sortedChain.begin() + insertion, _pair[i].winner);
-        _aux.insert(_aux.begin() + insertion, _pair[i]);
+        _sortedPair.insert(_sortedPair.begin() + insertion, _pair[i]);
         std::cout << "(PHASE 2) _sortedChain at " << i << " iteration => ";
-        for (int x = 0; x < _sortedChain.size(); x++) 
+        for (size_t x = 0; x < _sortedChain.size(); x++) 
             std::cout << _sortedChain[x] << " ";
         std::cout << std::endl; 
     }
-    _pair = _aux;
-    for (int i = 0; i < _pair.size(); i++)
-        std::cout << "(PHASE 2) pair sorted: winner ==> " << _pair[i].winner << " loser ==> " << _pair[i].loser << std::endl;
-    /* for (int i = 0; i < _aux.size(); i++)
-        std::cout << "this is aux: winner ==> " << _aux[i].winner << " loser ==> " << _aux[i].loser << std::endl; */
+
+    for (size_t i = 0; i <  _sortedPair.size(); i++)
+        std::cout << "(PHASE 2) pair sorted: winner ==> " << _sortedPair[i].winner << " loser ==> " << _sortedPair[i].loser << std::endl;
+    /* for (int i = 0; i < _sortedPair.size(); i++)
+        std::cout << "this is aux: winner ==> " << _sortedPair[i].winner << " loser ==> " << _sortedPair[i].loser << std::endl; */
 
 }
 
@@ -123,11 +133,13 @@ int PmergeMe::getPairSize() {
 }
 
 void PmergeMe::insertLoser(int jIndex) {
-    if(_pair[jIndex].loser < 0)
+    if(_sortedPair[jIndex].loser < 0)
         return;
-    int insertion = binarySearch(_pair[jIndex].loser, jIndex);
-    _sortedChain.insert(_sortedChain.begin() + insertion, _pair[jIndex].loser); //always first special case
-    std::cout << "(PHASE 3) pair inserted: winner ==> " << _pair[jIndex].winner << " loser ==> " << _pair[jIndex].loser << std::endl;
+    int winnerPos = binarySearch(_sortedPair[jIndex].winner, _sortedChain.size() - 1);
+    int insertion = binarySearch(_sortedPair[jIndex].loser, winnerPos - 1);
+    std::cout << "insertLoser(" << jIndex << ") loser=" << _sortedPair[jIndex].loser << " winner=" << _sortedPair[jIndex].winner << std::endl;
+    _sortedChain.insert(_sortedChain.begin() + insertion, _sortedPair[jIndex].loser); //always first special case
+    std::cout << "(PHASE 3) pair inserted: winner ==> " << _sortedPair[jIndex].winner << " loser ==> " << _sortedPair[jIndex].loser << std::endl;
 }
 
 void PmergeMe::insertRemain() {
@@ -135,27 +147,35 @@ void PmergeMe::insertRemain() {
     int prev = 1;
     int curr = 3;
     insertLoser(0);
-
+    insertLoser(1);
     std::cout << "outside while loop, curr = " << curr << std::endl;
-    std::cout << "outside while loop, _pair.size() = " << _pair.size() << std::endl;
-    while (curr <= _pair.size()) {
+    std::cout << "outside while loop, _pair.size() = " << _sortedPair.size() << std::endl;
+    while (prev <= (int)_sortedPair.size()) {
+        std::cout << "curr=" << curr << " prev=" << prev << std::endl;
         std::cout << "inside while loop, curr = " << curr << std::endl;
-        int insertionIndex = std::min(curr, (int)_pair.size() - 1);
-        for(int i = insertionIndex; i >= prev; i--) {
-            insertLoser(i);
+        int insertionIndex = std::min(curr, (int)_sortedPair.size() - 1);
+/*         if (curr == 3) {
+            for(int i = insertionIndex; i >= prev; i--)
+                insertLoser(i);
         }
+        else {
+            for(int i = insertionIndex; i > prev; i--)
+                insertLoser(i);
+        } */
+        for(int i = insertionIndex; i > prev; i--)
+            insertLoser(i);
 
         // find the next Jacobsthal index
         int tmpIndex = curr + 2 * prev;
         prev = curr;
         curr = tmpIndex;
     }
-    std::cout << "_vector => ";
-    for (int y = 0; y < _vector.size(); y++) 
+    std::cout << "_vector      => ";
+    for (size_t y = 0; y < _vector.size(); y++) 
             std::cout << _vector[y] << " ";
     std::cout << std::endl;
     std::cout << "_sortedChain => ";
-    for (int x = 0; x < _sortedChain.size(); x++) 
+    for (size_t x = 0; x < _sortedChain.size(); x++) 
             std::cout << _sortedChain[x] << " ";
     std::cout << std::endl; 
 }

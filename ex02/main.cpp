@@ -49,17 +49,23 @@
 
 int main (int argc, char *argv[]) {
 
-    if (argc != 2)
+    if (argc < 2)
         return 1;
-    std::string input = argv[1];
-    PmergeMe ford(input);
-
-    if (ford.processInput()) {
-        std::cout << "done" << std::endl;
-        ford.makePairs();
-        ford.sortWinners(ford.getPairSize());
-        ford.insertRemain();
+   
+    PmergeMe ford;
+    int i = 1;
+    while (i < argc) {
+        std::string input = argv[i];
+        if (ford.processInput(input))
+            std::cout << "continue" << std::endl;
+        else{
+            return 1;  
+        }
+        i++;
     }
-
+    ford.makePairs();
+    ford.sortWinners(ford.getPairSize());
+    std::cout << "sortWinners finished" << std::endl;
+    ford.insertRemain();
     return 0;
 }

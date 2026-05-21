@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib>
+#include <algorithm>
+#include <cstdlib>
 
 struct pairNum {
     int loser;
@@ -17,17 +19,18 @@ class PmergeMe {
         std::vector<int> _vector;
         std::string _input;
         std::vector<pairNum> _pair;
-        std::vector<pairNum> _aux;
+        std::vector<pairNum> _sortedPair;
         std::vector<int> _sortedChain;
-        PmergeMe();
+        
         int binarySearch(int searchValue, int high);
         void insertLoser(int jIndex);
     public:
-        PmergeMe(std::string &input);
+        PmergeMe();
+        //PmergeMe(std::string &input);
         PmergeMe(const PmergeMe &other);
         PmergeMe& operator=(const PmergeMe &other);
         ~PmergeMe();
-        bool processInput();
+        bool processInput(std::string &input);
         void makePairs();
         void sortWinners(int size);
         int getPairSize();
