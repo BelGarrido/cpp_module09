@@ -46,14 +46,25 @@
 // ...
 
 
-
 int main (int argc, char *argv[]) {
 
     if (argc < 2)
         return 1;
-   
-    PmergeMe ford;
     int i = 1;
+    std::vector<unsigned int> vec;
+    while (i < argc) {
+        std::string input = argv[i];
+        if(processInput(input, vec)) {
+            std::cerr << "Error (duplicate number) => " << token << std::endl;
+            return 1;
+        }
+    }
+
+
+
+    PmergeMe ford;
+
+/*     int i = 1;
     while (i < argc) {
         std::string input = argv[i];
         if (ford.processInput(input))
@@ -63,9 +74,13 @@ int main (int argc, char *argv[]) {
         }
         i++;
     }
+
     ford.makePairs();
     ford.sortWinners(ford.getPairSize());
     std::cout << "sortWinners finished" << std::endl;
     ford.insertRemain();
-    return 0;
+    return 0; */
+
+    std::vector<unsigned int> sortedVector = ford.sortVector(std::string &input);
+    std::deque<unsigned int> sortedDeque = ford.sortVector(std::string &input);
 }
