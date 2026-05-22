@@ -25,7 +25,7 @@ bool isValidNumber(std::string &s) {
     return true;
 }
 
-bool PmergeMe::processInput(std::string &input) {
+bool PmergeMe::processInput(std::string &input, std::vector<unsigned int> &vec) {
 
     std::istringstream iss(input);
     std::string token;
@@ -166,10 +166,7 @@ void PmergeMe::insertRemain() {
 }
 
 
-
-
-
-std::vector<unsigned int> PmergeMe::sortVector(std::vector<unsigned int> &v) {
+std::vector<unsigned int> PmergeMe::sortVector(std::string &input) {
     
     vectorS vec;
     int i = 1;

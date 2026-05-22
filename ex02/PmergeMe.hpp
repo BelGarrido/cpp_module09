@@ -33,6 +33,7 @@ class PmergeMe {
         
         int binarySearch(int searchValue, int high);
         void insertLoser(int jIndex);
+        
     public:
         PmergeMe();
         //PmergeMe(std::string &input);
