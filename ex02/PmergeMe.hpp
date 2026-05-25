@@ -10,50 +10,51 @@
 #include <cstdlib>
 #include <limits.h>
 #include <deque>
+#include <sys/time.h>
 
 struct pairNum {
     int loser;
     int winner;
 };
 
-struct vectorS {
-    std::vector<int> _vector;
+struct vectorStruct {
+    std::vector<unsigned int> _originalChain;
     std::vector<pairNum> _pair;
     std::vector<pairNum> _sortedPair;
-    std::vector<int> _sortedChain;
+    std::vector<unsigned int> _sortedChain;
+};
+
+struct dequeStruct {
+    std::deque<unsigned int> _originalChain;
+    std::deque<pairNum> _pair;
+    std::deque<pairNum> _sortedPair;
+    std::deque<unsigned int> _sortedChain;
 };
 
 class PmergeMe {
+    
     private:
-        std::vector<int> _vector;
-        std::string _input;
-        std::vector<pairNum> _pair;
-        std::vector<pairNum> _sortedPair;
-        std::vector<int> _sortedChain;
+        PmergeMe(const PmergeMe &other);
+        PmergeMe& operator=(const PmergeMe &other);
         
-        int binarySearch(int searchValue, int high);
-        void insertLoser(int jIndex);
         
     public:
         PmergeMe();
-        //PmergeMe(std::string &input);
-        PmergeMe(const PmergeMe &other);
-        PmergeMe& operator=(const PmergeMe &other);
         ~PmergeMe();
-
         std::vector<unsigned int> sortVector(std::vector<unsigned int> &v);
-        static void sort(const std::deque<unsigned int> &in, std::deque<unsigned int> &out);
+        std::deque<unsigned int> sortDeque(std::deque<unsigned int> &d);
 
-        bool processInput(std::string &input);
-        //void makePairs();
-        std::vector<pairNum> makePairs(std::vector<unsigned int> &v);
-        //void sortWinners(int size);
-        void sortWinners(vectorS &vec, int size);
-        int getPairSize();
-        void insertRemain();
 };
 
-bool isValidNumber(std::string &s);
+// std::vector<pairNum> makePairs(std::vector<unsigned int> &v);
+// //void sortWinners(int size);
+// void sortWinners(vectorStruct &vec, int size);
+// void insertRemain(vectorStruct &vec);
+// int binarySearch(vectorStruct vec, unsigned int searchValue, int high);
+// void insertLoser(vectorStruct &vec, int jIndex);
+// bool isValidNumber(std::string &s);
+ bool saveInput(std::string &input,vectorStruct &vec, dequeStruct &deq);
+
 
 #endif
 
