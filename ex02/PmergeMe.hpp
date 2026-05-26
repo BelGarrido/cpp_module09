@@ -42,7 +42,7 @@ class PmergeMe {
         PmergeMe();
         ~PmergeMe();
         std::vector<unsigned int> sortVector(std::vector<unsigned int> &v);
-        std::deque<unsigned int> sortDeque(std::deque<unsigned int> &d);
+        std::deque<unsigned int> sortDeque(dequeStruct &deq);
 
 };
 

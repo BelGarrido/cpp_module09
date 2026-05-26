@@ -79,9 +79,6 @@ std::vector<pairNum> makePairs(std::vector<unsigned int> &v) { //puedo pasar el 
         }
         pair.push_back(p);
     }
-
-    // for (size_t i = 0; i < pair.size(); i++)
-    //     std::cout << "(PHASE 1) pair: winner ==> " << pair[i].winner << " loser ==> " << pair[i].loser << std::endl;
     return pair;
 }
 
@@ -119,14 +116,7 @@ void sortWinners(vectorStruct &vec, int size) {
 
         vec._sortedChain.insert(vec._sortedChain.begin() + insertion, vec._pair[i].winner);
         vec._sortedPair.insert(vec._sortedPair.begin() + insertion, vec._pair[i]);
-        std::cout << "(PHASE 2) _sortedChain at " << i << " iteration => ";
-        for (size_t x = 0; x < vec._sortedChain.size(); x++) 
-            std::cout << vec._sortedChain[x] << " ";
-        std::cout << std::endl; 
     }
-
-    for (size_t i = 0; i < vec._sortedPair.size(); i++)
-        std::cout << "(PHASE 2) pair sorted: winner ==> " << vec._sortedPair[i].winner << " loser ==> " << vec._sortedPair[i].loser << std::endl;
 }
 
 void insertLoser(vectorStruct &vec, int jIndex) {
@@ -135,9 +125,7 @@ void insertLoser(vectorStruct &vec, int jIndex) {
     int winnerPos = binarySearch(vec, vec._sortedPair[jIndex].winner, vec._sortedChain.size() - 1);
     int insertion = binarySearch(vec, vec._sortedPair[jIndex].loser, winnerPos - 1);
 
-    std::cout << "insertLoser(" << jIndex << ") loser=" << vec._sortedPair[jIndex].loser << " winner=" << vec._sortedPair[jIndex].winner << std::endl;
     vec._sortedChain.insert(vec._sortedChain.begin() + insertion, vec._sortedPair[jIndex].loser); 
-    std::cout << "(PHASE 3) pair inserted: winner ==> " << vec._sortedPair[jIndex].winner << " loser ==> " << vec._sortedPair[jIndex].loser << std::endl;
 }
 
 void insertRemain(vectorStruct &vec) {
@@ -146,8 +134,7 @@ void insertRemain(vectorStruct &vec) {
     int curr = 3;
     insertLoser(vec, 0);
     insertLoser(vec, 1);
-    std::cout << "outside while loop, curr = " << curr << std::endl;
-    std::cout << "outside while loop, _pair.size() = " << vec._sortedPair.size() << std::endl;
+
     while (prev <= (int)vec._sortedPair.size()) {
 
         int insertionIndex = std::min(curr, (int)vec._sortedPair.size() - 1);
@@ -159,14 +146,6 @@ void insertRemain(vectorStruct &vec) {
         prev = curr;
         curr = tmpIndex;
     }
-    std::cout << "_originalChain      => ";
-    for (size_t y = 0; y < vec._originalChain.size(); y++) 
-            std::cout << vec._originalChain[y] << " ";
-    std::cout << std::endl;
-    std::cout << "_sortedChain => ";
-    for (size_t x = 0; x < vec._sortedChain.size(); x++) 
-            std::cout << vec._sortedChain[x] << " ";
-    std::cout << std::endl; 
 }
 
 
@@ -175,7 +154,6 @@ std::vector<unsigned int> PmergeMe::sortVector(std::vector<unsigned int> &v) {
     vectorStruct vec;
     vec._pair = makePairs(v);
     sortWinners(vec, vec._pair.size());
-    //std::cout << "sortWinners finished" << std::endl;
     insertRemain(vec);
     return vec._sortedChain;
 }
@@ -199,9 +177,6 @@ std::deque<pairNum> makePairs(std::deque<unsigned int> &d) { //puedo pasar el ve
         }
         pair.push_back(p);
     }
-
-    //for (size_t i = 0; i < pair.size(); i++)
-        //std::cout << "(PHASE 1) pair: winner ==> " << pair[i].winner << " loser ==> " << pair[i].loser << std::endl;
     return pair;
 }
 
@@ -239,25 +214,20 @@ void sortWinners(dequeStruct &deq, int size) {
 
         deq._sortedChain.insert(deq._sortedChain.begin() + insertion, deq._pair[i].winner);
         deq._sortedPair.insert(deq._sortedPair.begin() + insertion, deq._pair[i]);
-        std::cout << "(PHASE 2) _sortedChain at " << i << " iteration => ";
-        for (size_t x = 0; x < deq._sortedChain.size(); x++) 
-            std::cout << deq._sortedChain[x] << " ";
-        std::cout << std::endl; 
     }
-
-    for (size_t i = 0; i < deq._sortedPair.size(); i++)
-        std::cout << "(PHASE 2) pair sorted: winner ==> " << deq._sortedPair[i].winner << " loser ==> " << deq._sortedPair[i].loser << std::endl;
 }
 
 void insertLoser(dequeStruct &deq, int jIndex) {
-    if(deq._sortedPair[jIndex].loser < 0)
+    if(deq._sortedPair[jIndex].loser < 0) {
+        std::cout << "JACOBSTHAL CHECK, insert: (" << jIndex << ") ❌ loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
         return;
+    }
+        
     int winnerPos = binarySearch(deq, deq._sortedPair[jIndex].winner, deq._sortedChain.size() - 1);
     int insertion = binarySearch(deq, deq._sortedPair[jIndex].loser, winnerPos - 1);
 
-    std::cout << "insertLoser(" << jIndex << ") loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
+    std::cout << "JACOBSTHAL CHECK, insert: (" << jIndex << ") ✔️  loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
     deq._sortedChain.insert(deq._sortedChain.begin() + insertion, deq._sortedPair[jIndex].loser); 
-    std::cout << "(PHASE 3) pair inserted: winner ==> " << deq._sortedPair[jIndex].winner << " loser ==> " << deq._sortedPair[jIndex].loser << std::endl;
 }
 
 void insertRemain(dequeStruct &deq) {
@@ -265,12 +235,17 @@ void insertRemain(dequeStruct &deq) {
     int prev = 1;
     int curr = 3;
     insertLoser(deq, 0);
-    insertLoser(deq, 1);
-    std::cout << "outside while loop, curr = " << curr << std::endl;
-    std::cout << "outside while loop, _pair.size() = " << deq._sortedPair.size() << std::endl;
+    //std::cout << "sortedPair size: " << deq._sortedPair.size() << std::endl;
+    if(deq._sortedPair.size() > 1) {
+        //std::cout << "calling insertLoser(1)" << std::endl;
+        insertLoser(deq, 1);
+}
     while (prev <= (int)deq._sortedPair.size()) {
 
         int insertionIndex = std::min(curr, (int)deq._sortedPair.size() - 1);
+        std::cout << std::endl;
+        std::cout << "INSERTION INDEX: " << insertionIndex << ") ⬅️ " << std::endl;
+        std::cout << std::endl;
         for(int i = insertionIndex; i > prev; i--)
             insertLoser(deq, i);
 
@@ -279,22 +254,12 @@ void insertRemain(dequeStruct &deq) {
         prev = curr;
         curr = tmpIndex;
     }
-    std::cout << "_originalChain      => ";
-    for (size_t y = 0; y < deq._originalChain.size(); y++) 
-            std::cout << deq._originalChain[y] << " ";
-    std::cout << std::endl;
-    std::cout << "_sortedChain => ";
-    for (size_t x = 0; x < deq._sortedChain.size(); x++) 
-            std::cout << deq._sortedChain[x] << " ";
-    std::cout << std::endl; 
 }
 
-std::deque<unsigned int> PmergeMe::sortDeque(std::deque<unsigned int> &d) {
+std::deque<unsigned int> PmergeMe::sortDeque(dequeStruct &deq) {
 
-    dequeStruct deq;
-    deq._pair = makePairs(d);
+    deq._pair = makePairs(deq._originalChain);
     sortWinners(deq, deq._pair.size());
-    std::cout << "sortWinners finished" << std::endl;
     insertRemain(deq);
     return deq._sortedChain;
 }
