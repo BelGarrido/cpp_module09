@@ -46,16 +46,6 @@ class PmergeMe {
 
 };
 
-// std::vector<pairNum> makePairs(std::vector<unsigned int> &v);
-// //void sortWinners(int size);
-// void sortWinners(vectorStruct &vec, int size);
-// void insertRemain(vectorStruct &vec);
-// int binarySearch(vectorStruct vec, unsigned int searchValue, int high);
-// void insertLoser(vectorStruct &vec, int jIndex);
-// bool isValidNumber(std::string &s);
- bool saveInput(std::string &input,vectorStruct &vec, dequeStruct &deq);
-
+bool saveInput(std::string &input,vectorStruct &vec, dequeStruct &deq);
 
 #endif
-
-

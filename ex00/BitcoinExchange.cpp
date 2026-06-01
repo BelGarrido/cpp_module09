@@ -14,6 +14,29 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange &other) {
 
 BitcoinExchange::~BitcoinExchange() {}
 
+// Checks that the line has a '|' separator, then splits it into
+// Returns ERR_BAD_INPUT if no '|' is found.
+// date (left side) and strValue (right side), trimming spaces from both.
+eError BitcoinExchange::validLine(std::string &line, std::string &date, std::string &strValue) {
+    
+    if(line.find('|') == std::string::npos) 
+        return ERR_BAD_INPUT;
+
+    std::stringstream ss(line);
+
+    std::string tmpDate;
+    getline(ss, tmpDate, '|');   // reads until it hits '|'
+    date = trim(tmpDate);
+
+    std::string tmpValue;
+    getline(ss, tmpValue);
+    strValue = trim(tmpValue);
+    return OK;
+}
+
+// Converts strValue to float and checks it is not empty, negative, or over 1000.
+// Uses ss.eof() to catch inputs like "2a" where the full string was not consumed.
+// Returns ERR_BAD_INPUT, ERR_NEGATIVE, or ERR_TOO_LARGE accordingly.
 eError BitcoinExchange::validValue(std::string &strValue) {
     if(strValue.empty()) {
         return ERR_BAD_INPUT;
@@ -21,15 +44,22 @@ eError BitcoinExchange::validValue(std::string &strValue) {
     float value;
     std::stringstream ss(strValue);
     ss >> value;
+    if (!ss.eof()) return ERR_BAD_INPUT;
+    //std::cout << "(validValue)"<< value << std::endl;
     if (value > 1000) return ERR_TOO_LARGE;
     else if (value < 0) return ERR_NEGATIVE;
     return OK;
 }
 
+// Validates the date format (YYYY-MM-DD), checks separators, month/day
+// ranges, leap years, minimum year (2009), and that the date is not in the future.
+// Returns ERR_BAD_DATE on any invalid value.
 eError BitcoinExchange::validDate(std::string &date) {
 
-    if(date.size() < 10) return ERR_BAD_DATE;
-    if(date[4] != '-' || date[7] != '-') return ERR_BAD_DATE;
+    if(date.size() < 10)
+        return ERR_BAD_DATE;
+    if(date[4] != '-' || date[7] != '-')
+        return ERR_BAD_DATE;
 
     int day;
     std::stringstream tmpD(date.substr(8, 2));
@@ -41,45 +71,39 @@ eError BitcoinExchange::validDate(std::string &date) {
     std::stringstream tmpY(date.substr(0, 4));
     tmpY >> year;
 
-    //------------------------------------
-
     time_t now = time(0);
     tm *ltm = localtime(&now);
 
-    if (month < 1 || month > 12) return ERR_BAD_DATE;
-    if (day < 1 || day > 31) return ERR_BAD_DATE;
+    if (month < 1 || month > 12) 
+        return ERR_BAD_DATE;
+    if (day < 1 || day > 31)
+        return ERR_BAD_DATE;
     if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30)
         return ERR_BAD_DATE;
     if (month == 2) {
         if((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
-            if (day > 29) return ERR_BAD_DATE;
+            if (day > 29)
+                return ERR_BAD_DATE;
         }
         else {
-            if (day > 28) return ERR_BAD_DATE;
+            if (day > 28)
+                return ERR_BAD_DATE;
         }
     }
-    if (year < 2009) return ERR_BAD_DATE;
-    if ((year > (ltm -> tm_year + 1900))|| (month > ltm -> tm_mon + 1) || day > ltm -> tm_mday )
+    if (year < 2009)
+        return ERR_BAD_DATE;
+    if (year > (ltm -> tm_year + 1900))
+        return ERR_BAD_DATE;
+    if ((year == ltm -> tm_year + 1900) && (month == ltm -> tm_mon + 1) && (day > ltm -> tm_mday))
+        return ERR_BAD_DATE;
+    if ((year == ltm -> tm_year + 1900) && (month > ltm -> tm_mon + 1))
         return ERR_BAD_DATE;
     return OK;
 }
 
-eError BitcoinExchange::validLine(std::string &line, std::string &date, std::string &strValue) {
-    
-    if(line.find('|') == std::string::npos) return ERR_BAD_INPUT;
-
-    std::stringstream ss(line);
-
-    std::string tmpDate;
-    getline(ss, tmpDate, '|');   // reads until it hits ','
-    date = trim(tmpDate);
-    //-------------------------------------------------------------
-    std::string tmpValue;
-    getline(ss, tmpValue);
-    strValue = trim(tmpValue);
-    return OK;
-}
-
+// Opens the CSV database file, skips the header line, then reads each
+// (date, rate) pair and inserts it into the _database map.
+// Returns false if the file cannot be opened.
 bool BitcoinExchange::loadDatabase(const std::string &filename) {
     
     std::ifstream data(filename.c_str());
@@ -106,13 +130,13 @@ bool BitcoinExchange::loadDatabase(const std::string &filename) {
         std::stringstream sf(strValue);
         sf >> value;
         _database.insert(std::make_pair(date, value));
-        //_database[date] = value;
-
     }
     return true;
 }
 
-
+// Searches _database for the closest date <= the given date using lower_bound.
+// If no exact match, steps back one entry to get the most recent past rate.
+// Returns the BTC rate as a float.
 float BitcoinExchange::lookUp(std::string &date) {
     std::map<std::string, float>::iterator key = _database.lower_bound(date);
     std::map<std::string, float>::iterator end = _database.end();
@@ -122,6 +146,10 @@ float BitcoinExchange::lookUp(std::string &date) {
     return key -> second;
 }
 
+// Opens the input file, skips the header, then for each line runs the
+// three validators (validLine -> validDate -> validValue).
+// If all pass, prints: date => value = result
+// If any fails, prints the error and skips to the next line.
 bool BitcoinExchange::processInput(const std::string &filename) {
 
     std::ifstream input(filename.c_str());
@@ -153,7 +181,8 @@ bool BitcoinExchange::processInput(const std::string &filename) {
     return true;
 }
 
-
+// Returns a copy of str with leading and trailing spaces removed.
+// WARNING: undefined behavior if str is empty or all spaces.
 std::string trim(const std::string &str) {
     int start = str.find_first_not_of(' ');  // 3
     int final = str.find_last_not_of(' ');   // 7
@@ -161,15 +190,16 @@ std::string trim(const std::string &str) {
     return trimValue;
 }
 
-
+// Prints the error message to stderr based on the error code.
+// For ERR_BAD_INPUT and ERR_BAD_DATE it also prints the bad value (context).
+// For ERR_NEGATIVE and ERR_TOO_LARGE it prints a generic message only.
 void BitcoinExchange::printError(eError error, std::string &context) {
     if (error == ERR_BAD_INPUT)
-        std::cout << "Error: bad input => " << context << std::endl;
+        std::cerr << "Error: bad input => " << context << std::endl;
     if (error == ERR_BAD_DATE)
-        std::cout << "Error: bad input => " << context << std::endl;
+        std::cerr << "Error: bad input => " << context << std::endl;
     if (error == ERR_NEGATIVE)
-        std::cout << "Error: not a positive number." << std::endl;
+        std::cerr << "Error: not a positive number." << std::endl;
     if (error == ERR_TOO_LARGE)
-        std::cout << "Error: too large a number." << std::endl;
+        std::cerr << "Error: too large a number." << std::endl;
 }
-

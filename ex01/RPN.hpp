@@ -21,9 +21,9 @@ class RPN {
         int calculate();        
 } ;
 
- bool checkTwoItem(std::stack<int> &s);
- bool validOperand(std::string &token);
- bool validOperator(std::string &token);
- int executeOperation(int a, int b, std::string &op);
+//  bool checkTwoItem(std::stack<int> &s);
+//  bool validOperand(std::string &token);
+//  bool validOperator(std::string &token);
+//  int executeOperation(int a, int b, std::string &op);
 
 #endif

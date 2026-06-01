@@ -7,7 +7,6 @@
 #include <map>
 #include <ctime>
 
-
 enum eError {
     OK,
     ERR_TOO_LARGE,
