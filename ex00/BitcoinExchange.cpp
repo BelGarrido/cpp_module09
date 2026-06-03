@@ -115,7 +115,7 @@ bool BitcoinExchange::loadDatabase(const std::string &filename) {
     std::string line;
     getline(data, line);
     if (line.empty()) {
-        std::cout << "ERROR: file is empty, this is no super accurate i need to think about how to improve it"  << std::endl; 
+        std::cout << "ERROR: empty file"  << std::endl; 
         return false;
     }
 
@@ -181,11 +181,15 @@ bool BitcoinExchange::processInput(const std::string &filename) {
     return true;
 }
 
-// Returns a copy of str with leading and trailing spaces removed.
+// Returns a copy of str with leadisng and trailing spaces removed.
 // WARNING: undefined behavior if str is empty or all spaces.
 std::string trim(const std::string &str) {
-    int start = str.find_first_not_of(' ');  // 3
-    int final = str.find_last_not_of(' ');   // 7
+
+    size_t start = str.find_first_not_of(' ');  // 3
+    size_t final = str.find_last_not_of(' ');   // 7
+    if(start == std::string::npos) {
+        return "empty field.";
+    }
     std::string trimValue = str.substr(start, final - start + 1);
     return trimValue;
 }

@@ -218,14 +218,14 @@ void sortWinners(dequeStruct &deq, int size) {
 
 void insertLoser(dequeStruct &deq, int jIndex) {
     if(deq._sortedPair[jIndex].loser < 0) {
-        //std::cout << "JACOBSTHAL CHECK, insert: (" << jIndex << ") ❌ loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
+        std::cout << "JACOBSTHAL CHECK, insert: (" << jIndex << ") ❌ loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
         return;
     }
         
     int winnerPos = binarySearch(deq, deq._sortedPair[jIndex].winner, deq._sortedChain.size() - 1);
     int insertion = binarySearch(deq, deq._sortedPair[jIndex].loser, winnerPos - 1);
 
-    //std::cout << "JACOBSTHAL CHECK, insert: (" << jIndex << ") ✔️  loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
+    std::cout << "JACOBSTHAL CHECK, insert: (" << jIndex << ") ✔️  loser=" << deq._sortedPair[jIndex].loser << " winner=" << deq._sortedPair[jIndex].winner << std::endl;
     deq._sortedChain.insert(deq._sortedChain.begin() + insertion, deq._sortedPair[jIndex].loser); 
 }
 
@@ -242,7 +242,7 @@ void insertRemain(dequeStruct &deq) {
     while (prev <= (int)deq._sortedPair.size()) {
 
         int insertionIndex = std::min(curr, (int)deq._sortedPair.size() - 1);
-        //std::cout << "INSERTION INDEX: " << insertionIndex << ") ⬅️ " << std::endl;
+        std::cout << "INSERTION INDEX: " << insertionIndex << ") ⬅️ " << std::endl;
         for(int i = insertionIndex; i > prev; i--)
             insertLoser(deq, i);
 
